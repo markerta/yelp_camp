@@ -2,12 +2,27 @@ var express     = require("express");
 var router      = express.Router();
 var passport    = require("passport");
 var User        = require("../models/user");
+var Campground  = require("../models/campground");
 var middleware  = require("../middleware");
 
 /* LANDING PAGE */
 router.get("/", function(req, res) {
    res.render("landing");
 });
+
+/* ============= USER ROUTE =============== */
+
+router.get("/user/:user_id", middleware.isLoggedIn, function(req, res) {
+   Campground.find({'author.id': req.params.user_id}, function(err, campgrounds) {
+      if(err) {
+          req.flash("error", "Error.");
+          res.redirect("back");
+      } else {
+          res.render("user", {campgrounds: campgrounds});
+      }
+   });
+});
+
 
 /* ======================================== */
 /*               AUTH ROUTES                */
