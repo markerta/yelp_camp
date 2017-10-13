@@ -3,6 +3,7 @@ var router      = express.Router();
 var passport    = require("passport");
 var User        = require("../models/user");
 var Campground  = require("../models/campground");
+var Comment     = require("../models/comment");
 var middleware  = require("../middleware");
 
 /* LANDING PAGE */
@@ -18,7 +19,14 @@ router.get("/user/:user_id", middleware.isLoggedIn, function(req, res) {
           req.flash("error", "Error.");
           res.redirect("back");
       } else {
-          res.render("user", {campgrounds: campgrounds});
+          Comment.find({'author.id': req.params.user_id}, function(err, comments) {
+              if(err) {
+                  req.flash("error", "Error.");
+          res.redirect("back");
+              } else {
+                  res.render("user", {campgrounds: campgrounds, comments: comments});
+              }
+          });
       }
    });
 });
